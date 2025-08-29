@@ -1,11 +1,31 @@
 package users
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+	"strconv"
+	"trainnig-api-poc/api/users/usecases"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Response struct {
+	Data any  `json:"data"`
+	Meta Meta `json:"meta,omitempty"`
+}
+
+type Meta struct {
+	Next string `json:"next,omitempty"`
+	Prev string `json:"prev,omitempty"`
+}
 
 func ListUsers(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"users": []string{"user1", "user2"},
-	})
+	users := usecases.ListUsers()
+
+	response := Response{
+		Data: users,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func CreateUser(c *gin.Context) {
@@ -15,10 +35,12 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUserById(c *gin.Context) {
-	id := c.Param("id")
-	c.JSON(200, gin.H{
-		"user": id,
-	})
+	userIdParam := c.Param("userId")
+	userId, _ := strconv.ParseUint(userIdParam, 10, 64)
+
+	user := usecases.GetUserById(userId)
+
+	c.JSON(http.StatusOK, user)
 }
 
 func UpdateUser(c *gin.Context) {
