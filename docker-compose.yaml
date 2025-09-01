@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-training
+    environment:
+      POSTGRES_USER: training-api
+      POSTGRES_PASSWORD: training-api
+      POSTGRES_DB: training
+    ports:
+      - "5432:5432"
