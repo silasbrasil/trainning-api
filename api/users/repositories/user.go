@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"trainnig-api-poc/api/database"
 	"trainnig-api-poc/api/users/entities"
 	"trainnig-api-poc/api/users/models"
@@ -20,13 +19,13 @@ func (r *UserRepository) List() []entities.User {
 
 	db.Find(&userModels)
 
-	fmt.Println("Aqui")
-
 	for _, user := range userModels {
 		userEntities = append(userEntities, entities.User{
-			ID:    user.ID,
-			Name:  user.Name,
-			Email: user.Email,
+			ID:        user.ID,
+			Name:      user.Name,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
 		})
 	}
 
@@ -56,5 +55,8 @@ func (r *UserRepository) Save(user *entities.User) (*entities.User, error) {
 	}
 
 	user.ID = userModel.ID
+	user.CreatedAt = userModel.CreatedAt
+	user.UpdatedAt = userModel.UpdatedAt
+
 	return user, nil
 }
