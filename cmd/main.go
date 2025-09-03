@@ -1,22 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"trainnig-api-poc/api"
-	"trainnig-api-poc/api/db"
-	userRepo "trainnig-api-poc/api/users/repositories"
+	"trainnig-api-poc/api/database"
 )
 
 func main() {
-	db, err := db.Connection()
+	db, err := database.Init()
+	database.RunMigrations(db)
+
 	if err != nil {
 		log.Fatal("Failed to connect to database!")
 	}
-
-	userRepo := userRepo.NewRepository(db)
-
-	fmt.Println("User Repository:", userRepo)
 
 	r := api.SetupRouter()
 	r.Run(":8080")

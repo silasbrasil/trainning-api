@@ -1,10 +1,14 @@
 package usecases
 
-import "trainnig-api-poc/api/users/entities"
+import (
+	"trainnig-api-poc/api/users/entities"
+	"trainnig-api-poc/api/users/repositories"
+)
 
 func ListUsers() []entities.User {
-	return []entities.User{
-		{ID: 1, Name: "Alice", Email: "alice@gmail.com"},
-		{ID: 2, Name: "Bob", Email: "bob@gmail.com"},
-	}
+	userRepo := repositories.NewUserRepository()
+
+	users := userRepo.List()
+
+	return users
 }

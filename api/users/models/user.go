@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID        uint   `gorm:"primaryKey"`
+	ID        uint64 `gorm:"primaryKey"`
 	Name      string `gorm:"size:100"`
 	Email     string `gorm:"size:100;uniqueIndex"`
 	CreatedAt time.Time

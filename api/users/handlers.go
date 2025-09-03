@@ -3,6 +3,7 @@ package users
 import (
 	"net/http"
 	"strconv"
+	"trainnig-api-poc/api/users/entities"
 	"trainnig-api-poc/api/users/usecases"
 
 	"github.com/gin-gonic/gin"
@@ -28,12 +29,6 @@ func ListUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func CreateUser(c *gin.Context) {
-	c.JSON(201, gin.H{
-		"message": "User created",
-	})
-}
-
 func GetUserById(c *gin.Context) {
 	userIdParam := c.Param("userId")
 	userId, _ := strconv.ParseUint(userIdParam, 10, 64)
@@ -41,6 +36,24 @@ func GetUserById(c *gin.Context) {
 	user := usecases.GetUserById(userId)
 
 	c.JSON(http.StatusOK, user)
+}
+
+func CreateUser(c *gin.Context) {
+	var user entities.User
+
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	createdUser, err := usecases.CreateUser(user.Name, user.Email)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, createdUser)
 }
 
 func UpdateUser(c *gin.Context) {
