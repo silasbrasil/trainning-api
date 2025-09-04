@@ -32,7 +32,7 @@ func (r *UserRepository) List() []entities.User {
 	return userEntities
 }
 
-func (r *UserRepository) GetByID(id uint) *entities.User {
+func (r *UserRepository) GetById(id uint64) *entities.User {
 	db := database.GetDb()
 	var user entities.User
 

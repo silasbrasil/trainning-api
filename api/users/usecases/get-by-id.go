@@ -1,11 +1,15 @@
 package usecases
 
-import "trainnig-api-poc/api/users/entities"
+import (
+	"trainnig-api-poc/api/users/entities"
+	"trainnig-api-poc/api/users/repositories"
+)
 
-func GetUserById(id uint64) entities.User {
-	return entities.User{
-		ID:    id,
-		Name:  "Alice",
-		Email: "alice@gmail.com",
-	}
+func GetUserById(id uint64) *entities.User {
+	var user *entities.User
+
+	userRepo := repositories.NewUserRepository()
+	user = userRepo.GetById(id)
+
+	return user
 }
