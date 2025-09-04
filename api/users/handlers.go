@@ -1,9 +1,11 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"trainnig-api-poc/api/users/entities"
+	"trainnig-api-poc/api/users/repositories"
 	"trainnig-api-poc/api/users/usecases"
 
 	"github.com/gin-gonic/gin"
@@ -57,15 +59,53 @@ func CreateUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	userId := c.Param("userId")
-	c.JSON(200, gin.H{
-		"message": "User " + userId + " updated",
-	})
+	userIdParam := c.Param("userId")
+	userId, _ := strconv.ParseUint(userIdParam, 10, 64)
+	updatedPayload := entities.User{}
+
+	if err := c.ShouldBindJSON(&updatedPayload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Printf("Payload: %+v\n", updatedPayload)
+
+	userRepo := repositories.NewUserRepository()
+	existingUser := userRepo.GetById(userId)
+
+	if existingUser == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	existingUser.Name = updatedPayload.Name
+	existingUser.Email = updatedPayload.Email
+
+	_, err := userRepo.Update(userId, existingUser)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, existingUser)
 }
 
 func DeleteUser(c *gin.Context) {
-	userId := c.Param("userId")
-	c.JSON(200, gin.H{
-		"message": "User " + userId + " deleted",
-	})
+	userIdParam := c.Param("userId")
+	userId, _ := strconv.ParseUint(userIdParam, 10, 64)
+
+	userRepo := repositories.NewUserRepository()
+	existingUser := userRepo.GetById(userId)
+
+	if existingUser == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if err := userRepo.Delete(userId); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
